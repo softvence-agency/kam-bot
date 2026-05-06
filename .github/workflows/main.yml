@@ -1,0 +1,21 @@
+name: Deploy via SSH
+
+on:
+  push:
+    branches:
+      - main  # or whatever branch you want to auto-deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Connect to VPS and pull latest code
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          script: |
+            cd /root/telegram-omega-bot
+            git pull origin main
