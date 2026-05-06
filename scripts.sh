@@ -49,6 +49,12 @@ stop() {
     fi
 }
 
+restart() {
+    stop
+    sleep 2
+    start
+}
+
 status() {
     if [ -f "$PID_FILE" ]; then
         PID=$(cat "$PID_FILE")
