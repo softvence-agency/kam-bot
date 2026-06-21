@@ -17,6 +17,9 @@ else
 fi
 
 start() {
+    echo "📦 Syncing packages..."
+    pip install -r requirements.txt
+    
     echo "🚀 Starting bot in WATCH + DETACHED mode..."
 
     nohup watchmedo auto-restart \
@@ -81,10 +84,13 @@ case "$1" in
     stop)
         stop
         ;;
+    restart)
+        restart
+        ;;
     status)
         status
         ;;
     *)
-        echo "Usage: $0 {start|stop|status}"
+        echo "Usage: $0 {start|stop|restart|status}"
         ;;
 esac

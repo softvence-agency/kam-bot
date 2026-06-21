@@ -1,5 +1,6 @@
 import logging
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
+from telegram.request import HTTPXRequest
 from core.config import TELEGRAM_BOT_TOKEN, PROXY_URL
 from commands.welcome import welcome_message 
 from commands.timeline import timeline_command
@@ -8,7 +9,6 @@ from commands.wixbuddyupdate import wix_update_command
 from commands.webflowUpdate import webflow_update_command
 from commands.customUpdate import custom_update_command
 from commands.getChatId import getId_command
-from commands.welcome import welcome_message  # Import the new welcome handler
 from handlers.error_handler import error_handler
 
 # Logging setup
@@ -23,12 +23,12 @@ if __name__ == '__main__':
         logger.error("❌ TELEGRAM_BOT_TOKEN is not set. Please check your .env file.")
         exit(1)
 
-    app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
-    builder = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN)
-    
     if PROXY_URL:
-        builder = builder.proxy_url(PROXY_URL).get_updates_proxy_url(PROXY_URL)
+        req = HTTPXRequest(proxy_url=PROXY_URL)
+        builder = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).request(req).get_updates_request(req)
         logger.info(f"Using proxy: {PROXY_URL}")
+    else:
+        builder = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN)
         
     app = builder.build()
 
@@ -43,12 +43,6 @@ if __name__ == '__main__':
     app.add_handler(CommandHandler("wfupdate", webflow_update_command))
 
     # Add a message handler for private chats only
-    app.add_handler(MessageHandler( filters.TEXT & filters.ChatType.PRIVATE, welcome_message))
-
-    app.add_error_handler(error_handler)
-
-    logger.info("🤖 Bot is running...")
-    app.run_polling()
     app.add_handler(MessageHandler( filters.TEXT & filters.ChatType.PRIVATE, welcome_message))
 
     app.add_error_handler(error_handler)
