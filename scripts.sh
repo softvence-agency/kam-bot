@@ -66,6 +66,12 @@ status() {
     else
         echo "⚪ Bot not running"
     fi
+
+    if [ -f "$LOG_FILE" ]; then
+        echo ""
+        echo "📄 Last 10 lines of logs ($LOG_FILE):"
+        tail -n 10 "$LOG_FILE"
+    fi
 }
 
 case "$1" in
