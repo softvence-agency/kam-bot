@@ -72,6 +72,48 @@ status() {
 
     if [ -f "$LOG_FILE" ]; then
         echo ""
+        echo "--- 📊 BOT STATISTICS ---"
+        python3 -c "
+import sys, datetime
+
+total_req = 0
+success_req = 0
+errors = 0
+start_time = None
+
+try:
+    with open('$LOG_FILE', 'r') as f:
+        for line in f:
+            if 'Bot is running' in line and not start_time:
+                ts = line.split(' - ')[0]
+                try:
+                    start_time = datetime.datetime.strptime(ts, '%Y-%m-%d %H:%M:%S,%f')
+                except Exception:
+                    pass
+            if 'HTTP Request:' in line:
+                total_req += 1
+                if '200 OK' in line or 'HTTP/2 200' in line:
+                    success_req += 1
+            if ' - ERROR - ' in line or 'Traceback' in line or 'Exception' in line:
+                errors += 1
+
+    if start_time:
+        uptime = datetime.datetime.now() - start_time
+        print(f'⏱️  Uptime: {str(uptime).split(\".\")[0]} (Started: {start_time.strftime(\"%Y-%m-%d %H:%M:%S\")})')
+    else:
+        print('⏱️  Uptime: Unknown')
+
+    failed_req = total_req - success_req
+    rate = (success_req / total_req * 100) if total_req > 0 else 0
+    print(f'🌍 API Requests: {total_req} Total | ✅ {success_req} Success | ❌ {failed_req} Failed')
+    print(f'⚠️  App Errors: {errors}')
+    print(f'📈 API Success Rate: {rate:.2f}%')
+
+except Exception as e:
+    print('Stats unavailable')
+"
+        echo "-------------------------"
+        echo ""
         echo "📄 Last 10 lines of logs ($LOG_FILE):"
         tail -n 10 "$LOG_FILE"
     fi

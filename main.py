@@ -1,6 +1,5 @@
 import logging
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
-from telegram.request import HTTPXRequest
 from core.config import TELEGRAM_BOT_TOKEN, PROXY_URL
 from commands.welcome import welcome_message 
 from commands.timeline import timeline_command
@@ -24,8 +23,7 @@ if __name__ == '__main__':
         exit(1)
 
     if PROXY_URL:
-        req = HTTPXRequest(proxy_url=PROXY_URL)
-        builder = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).request(req).get_updates_request(req)
+        builder = builder.proxy(PROXY_URL).get_updates_proxy(PROXY_URL)
         logger.info(f"Using proxy: {PROXY_URL}")
     else:
         builder = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN)
