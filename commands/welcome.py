@@ -1,5 +1,8 @@
+import logging
 from telegram import Update
 from telegram.ext import ContextTypes
+
+logger = logging.getLogger(__name__)
 
 async def welcome_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     bot = await context.bot.get_me()
@@ -10,6 +13,7 @@ async def welcome_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     for member in update.message.new_chat_members:
         if member.id == bot_id:
+            logger.info(f"Bot added to chat {update.effective_chat.id}. Sending welcome message.")
             await update.message.reply_text(
                 "👋 Hello everyone!\n\n"
                 "I’m *Softvence Omega KAM Bot*, here to help manage updates across teams.\n\n"

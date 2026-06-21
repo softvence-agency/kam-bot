@@ -1,8 +1,10 @@
+import logging
 from html import escape
 from telegram import Update
 from telegram.ext import ContextTypes
 from core.config import CUSTOM_TARGET_GROUP_CHAT_ID
 
+logger = logging.getLogger(__name__)
 
 async def custom_update_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Full command text (with @bot if exists)
@@ -26,6 +28,8 @@ async def custom_update_command(update: Update, context: ContextTypes.DEFAULT_TY
 
     username = user.username or user.full_name
     chat_title = chat.title or "Private Chat"
+    
+    logger.info(f"Command /cupdate called by {username} in {chat_title} (ID: {chat.id})")
 
     if not content_to_send:
         content_to_send = f"{escape(raw_text)} {escape(username)}\n\n— {escape(chat_title)}"
@@ -39,9 +43,11 @@ async def custom_update_command(update: Update, context: ContextTypes.DEFAULT_TY
             parse_mode="HTML"
         )
 
+        logger.info(f"Successfully sent /cupdate from {username} to CUSTOM_TARGET_GROUP_CHAT_ID: {CUSTOM_TARGET_GROUP_CHAT_ID}")
         await update.message.reply_text(
             "✅ Your Update has been sent to the custom central update group."
         )
 
     except Exception as e:
+        logger.error(f"Failed to send /cupdate from {username}: {e}")
         await update.message.reply_text(f"❌ Failed to send message: {e}")
