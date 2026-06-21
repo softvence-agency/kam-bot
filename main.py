@@ -22,11 +22,11 @@ if __name__ == '__main__':
         logger.error("❌ TELEGRAM_BOT_TOKEN is not set. Please check your .env file.")
         exit(1)
 
+    builder = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN)
+    
     if PROXY_URL:
         builder = builder.proxy(PROXY_URL).get_updates_proxy(PROXY_URL)
         logger.info(f"Using proxy: {PROXY_URL}")
-    else:
-        builder = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN)
         
     app = builder.build()
 
